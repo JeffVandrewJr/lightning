@@ -81,7 +81,7 @@ static struct wireaddr *make_onion(const tal_t *ctx,
 //V3 tor after 3.3.3.aplha FIXME: TODO SAIBATO
 //sprintf((char *)reach->buffer,"ADD_ONION NEW:ED25519-V3 Port=9735,127.0.0.1:9735\r\n");
 	tor_send_cmd(rbuf,
-		     tal_fmt(tmpctx, "ADD_ONION NEW:RSA1024 Port=%d,%s Flags=DiscardPK,Detach",
+		     tal_fmt(tmpctx, "ADD_ONION RSA1024 Port=%d,%s Flags=DiscardPK,Detach",
 			     /* FIXME: We *could* allow user to set Tor port */
 			     DEFAULT_PORT, fmt_wireaddr(tmpctx, local)));
 
