@@ -5,6 +5,7 @@
 #include <ccan/rbuf/rbuf.h>
 #include <ccan/read_write_all/read_write_all.h>
 #include <ccan/str/hex/hex.h>
+#include <ccan/tal/path/path.h>
 #include <ccan/tal/grab_file/grab_file.h>
 #include <ccan/tal/str/str.h>
 #include <common/type_to_string.h>
@@ -13,6 +14,7 @@
 #include <connectd/tor_autoservice.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <lightningd/lightningd.h>
 #include <lightningd/log.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -84,7 +86,7 @@ static struct wireaddr *make_onion(const tal_t *ctx,
 //V3 tor after 3.3.3.aplha FIXME: TODO SAIBATO
 //sprintf((char *)reach->buffer,"ADD_ONION NEW:ED25519-V3 Port=9735,127.0.0.1:9735\r\n");
 	private_key_blob_path = path_join(NULL, ld->config_dir, ".keyblob");
-	private_key_blob_file = grab_file(tempctx, private_key_blob_path, &len);
+	private_key_blob_file = grab_file(tmpctx, private_key_blob_path, &len);
 	if (!private_key_blob_file) {
 		// if no keyblob file exists, have Tor generate a keyblob
 		tor_send_cmd(rbuf,
@@ -105,10 +107,10 @@ static struct wireaddr *make_onion(const tal_t *ctx,
 		if (strstarts(line, "PrivateKey=RSA1024: ")) {
 			// if ADD_ONION NEW is sent to Tor, tor will return a keyblob
 			// writing the keyblob to file allows persistent autotor addresses
-			const char **split_line;
-			const char *key;
-			const int fd;
-			split_line = tal_strsplit(line, line, ": ");
+			char **split_line;
+			char *key;
+			int fd;
+			split_line = tal_strsplit(line, line, ": ", STR_NO_EMPTY);
 			key = *(split_line + 1);
 			fd = open(private_key_blob_path, O_RDWR, O_CREAT);
 			write_all(fd, key, strlen(key));
