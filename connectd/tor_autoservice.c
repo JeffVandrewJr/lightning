@@ -84,13 +84,15 @@ static struct wireaddr *make_onion(const tal_t *ctx,
 //V3 tor after 3.3.3.aplha FIXME: TODO SAIBATO
 //sprintf((char *)reach->buffer,"ADD_ONION NEW:ED25519-V3 Port=9735,127.0.0.1:9735\r\n");
 	private_key_blob_path = path_join(NULL, ld->config_dir, ".keyblob");
-	private_key_blob_file = grab_file(private_key_blob_path, private_key_blob_path, &len);
+	private_key_blob_file = grab_file(tempctx, private_key_blob_path, &len);
 	if (!private_key_blob_file) {
+		// if no keyblob file exists, have Tor generate a keyblob
 		tor_send_cmd(rbuf,
 			     tal_fmt(tmpctx, "ADD_ONION NEW:RSA1024 Port=%d,%s Flags=DiscardPK,Detach",
 				     /* FIXME: We *could* allow user to set Tor port */
 				     DEFAULT_PORT, fmt_wireaddr(tmpctx, local)));
 	} else {
+		// if a keyblob file exists, use it to regenerate same address
 		tor_send_cmd(rbuf,
 			     tal_fmt(tmpctx, "ADD_ONION RSA1024:%s Port=%d,%s Flags=DiscardPK,Detach",
 				     /* FIXME: We *could* allow user to set Tor port */
@@ -101,6 +103,8 @@ static struct wireaddr *make_onion(const tal_t *ctx,
 	while ((line = tor_response_line(rbuf)) != NULL) {
 		const char *name;
 		if (strstarts(line, "PrivateKey=RSA1024: ")) {
+			// if ADD_ONION NEW is sent to Tor, tor will return a keyblob
+			// writing the keyblob to file allows persistent autotor addresses
 			const char **split_line;
 			const char *key;
 			const int fd;
@@ -108,6 +112,7 @@ static struct wireaddr *make_onion(const tal_t *ctx,
 			key = *(split_line + 1);
 			fd = open(private_key_blob_path, O_RDWR, O_CREAT);
 			write_all(fd, key, strlen(key));
+			close(fd);
 			continue;
 		}
 		if (!strstarts(line, "ServiceID="))
@@ -125,6 +130,7 @@ static struct wireaddr *make_onion(const tal_t *ctx,
 		discard_remaining_response(rbuf);
 		return onion;
 	}
+	tal_free(private_key_blob_path);
 	status_failed(STATUS_FAIL_INTERNAL_ERROR,
 		      "Tor didn't give us a ServiceID");
 }
