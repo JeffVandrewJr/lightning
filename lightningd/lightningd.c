@@ -669,6 +669,9 @@ int main(int argc, char *argv[])
 	/*~ Make sure we can reach the subdaemons, and versions match. */
 	test_subdaemons(ld);
 
+	/*~ Set global lightning_dir */
+	char *lightning_dir = ld->config_dir
+
 	/*~ Our "wallet" code really wraps the db, which is more than a simple
 	 * bitcoin wallet (though it's that too).  It also stores channel
 	 * states, invoices, payments, blocks and bitcoin transactions. */
