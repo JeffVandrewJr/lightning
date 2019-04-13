@@ -77,15 +77,15 @@ static struct wireaddr *make_onion(const tal_t *ctx,
 {
 	size_t len;
 	char *line;
-	char *private_key_blob_path;
-	char *private_key_blob_file;
+	const char *private_key_blob_path;
+	const char *private_key_blob_file;
 	struct wireaddr *onion;
 
 //V3 tor after 3.3.3.aplha FIXME: TODO SAIBATO
 //sprintf((char *)reach->buffer,"ADD_ONION NEW:ED25519-V3 Port=9735,127.0.0.1:9735\r\n");
-	private_key_blob_path = path_join(tmpctx, ld->config_dir, ".keyblob");
-	private_key_blob_file = grab_file(NULL, private_key_blob_path, &len);
-	if (!file) {
+	private_key_blob_path = path_join(NULL, ld->config_dir, ".keyblob");
+	private_key_blob_file = grab_file(private_key_blob_path, private_key_blob_path, &len);
+	if (!private_key_blob_file) {
 		tor_send_cmd(rbuf,
 			     tal_fmt(tmpctx, "ADD_ONION NEW:RSA1024 Port=%d,%s Flags=DiscardPK,Detach",
 				     /* FIXME: We *could* allow user to set Tor port */
@@ -100,7 +100,16 @@ static struct wireaddr *make_onion(const tal_t *ctx,
 
 	while ((line = tor_response_line(rbuf)) != NULL) {
 		const char *name;
-
+		if (strstarts(line, "PrivateKey=RSA1024: ")) {
+			const char **split_line;
+			const char *key;
+			const int fd;
+			split_line = tal_strsplit(line, line, ": ");
+			key = *(split_line + 1);
+			fd = open(private_key_blob_path, O_RDWR, O_CREAT);
+			write_all(fd, key, strlen(key));
+			continue;
+		}
 		if (!strstarts(line, "ServiceID="))
 			continue;
 		line += strlen("ServiceID=");
