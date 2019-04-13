@@ -6,6 +6,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+struct lightningd;
+
 struct wireaddr *tor_autoservice(const tal_t *ctx,
 				 const struct wireaddr *tor_serviceaddr,
 				 const char *tor_password,

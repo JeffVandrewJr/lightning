@@ -14,7 +14,6 @@
 #include <connectd/tor_autoservice.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <lightningd/lightningd.h>
 #include <lightningd/log.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -85,7 +84,7 @@ static struct wireaddr *make_onion(const tal_t *ctx,
 
 //V3 tor after 3.3.3.aplha FIXME: TODO SAIBATO
 //sprintf((char *)reach->buffer,"ADD_ONION NEW:ED25519-V3 Port=9735,127.0.0.1:9735\r\n");
-	private_key_blob_path = path_join(NULL, ld->config_dir, ".keyblob");
+	private_key_blob_path = path_join(NULL, lightningd->config_dir, ".keyblob");
 	private_key_blob_file = grab_file(tmpctx, private_key_blob_path, &len);
 	if (!private_key_blob_file) {
 		// if no keyblob file exists, have Tor generate a keyblob
