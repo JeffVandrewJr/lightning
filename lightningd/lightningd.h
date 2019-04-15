@@ -218,6 +218,6 @@ void test_subdaemons(const struct lightningd *ld);
 void notify_new_block(struct lightningd *ld, u32 block_height);
 
 /* make lightning_dir location globally available */
-extern char *lightning_dir
+extern char *lightning_dir;
 
 #endif /* LIGHTNING_LIGHTNINGD_LIGHTNINGD_H */
