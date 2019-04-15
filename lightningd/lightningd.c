@@ -79,6 +79,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+char *global_lightning_dir
+
 /*~ The core lightning object: it's passed everywhere, and is basically a
  * global variable.  This new_xxx pattern is something we'll see often:
  * it allocates and initializes a new structure, using *tal*, the hierarchical
@@ -670,7 +672,7 @@ int main(int argc, char *argv[])
 	test_subdaemons(ld);
 
 	/*~ Set global lightning_dir */
-	extern char *lightning_dir = ld->config_dir
+	global_lightning_dir = ld->config_dir
 
 	/*~ Our "wallet" code really wraps the db, which is more than a simple
 	 * bitcoin wallet (though it's that too).  It also stores channel
