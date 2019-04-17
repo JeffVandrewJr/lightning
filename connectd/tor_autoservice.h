@@ -11,4 +11,6 @@ struct wireaddr *tor_autoservice(const tal_t *ctx,
 				 const char *tor_password,
 				 const struct wireaddr_internal *bindings);
 
+char *lightning_dir(char *path);
+
 #endif /* LIGHTNING_CONNECTD_TOR_AUTOSERVICE_H */
