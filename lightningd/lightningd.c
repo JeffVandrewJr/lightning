@@ -671,7 +671,7 @@ int main(int argc, char *argv[])
 	test_subdaemons(ld);
 
 	/*~ Pass lightning directory location to autotor */
-	lightning_dir(ld->config_dir);
+	lightning_dir = ld->config_dir;
 
 	/*~ Our "wallet" code really wraps the db, which is more than a simple
 	 * bitcoin wallet (though it's that too).  It also stores channel

@@ -9,6 +9,7 @@
 #include <secp256k1.h>
 
 extern secp256k1_context *secp256k1_ctx;
+extern char *lightning_dir;
 
 /* Allocate and fill in a hex-encoded string of this data. */
 char *tal_hexstr(const tal_t *ctx, const void *data, size_t len);

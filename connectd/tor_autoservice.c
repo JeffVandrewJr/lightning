@@ -29,18 +29,6 @@
 #define MAX_TOR_ONION_V2_ADDR_LEN 16
 #define MAX_TOR_ONION_V3_ADDR_LEN 56
 
-char *lightning_dir(char *path)
-{
-	/* if passed "unchanged", fn returns lightning_dir
-	 * as was set in prior function invocation. If passed
-	 * anything else, this function resets lightning_dir to 
-	 * the passed value and returns lightning_dir */
-	static char *directory = NULL;
-	if (!streq(path, "unchanged")) {
-		directory = path;
-	}
-	return directory;
-}
 
 static void *buf_resize(struct membuf *mb, void *buf, size_t len)
 {
@@ -98,7 +86,7 @@ static struct wireaddr *make_onion(const tal_t *ctx,
 
 //V3 tor after 3.3.3.aplha FIXME: TODO SAIBATO
 //sprintf((char *)reach->buffer,"ADD_ONION NEW:ED25519-V3 Port=9735,127.0.0.1:9735\r\n");
-	private_key_blob_path = path_join(NULL, lightning_dir("unchanged"), ".keyblob");
+	private_key_blob_path = path_join(NULL, lightning_dir, ".keyblob");
 	private_key_blob_file = grab_file(tmpctx, private_key_blob_path);
 	if (!private_key_blob_file) {
 		// if no keyblob file exists, have Tor generate a keyblob
