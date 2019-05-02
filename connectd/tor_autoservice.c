@@ -87,7 +87,7 @@ static struct wireaddr *make_onion(const tal_t *ctx,
 
 //V3 tor after 3.3.3.aplha FIXME: TODO SAIBATO
 //sprintf((char *)reach->buffer,"ADD_ONION NEW:ED25519-V3 Port=9735,127.0.0.1:9735\r\n");
-	blob_file_name = ".keyblob"
+	blob_file_name = ".keyblob";
 	private_key_blob_path = path_join(tmpctx, lightning_dir, blob_file_name);
 	private_key_blob_file = grab_file(tmpctx, private_key_blob_path);
 	if (!private_key_blob_file) {
